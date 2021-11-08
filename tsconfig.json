@@ -1,0 +1,11 @@
+{
+    "include": [
+        "src/*.ts"
+    ],
+    "compilerOptions": {
+        "module": "Commonjs",
+        "rootDir": "src",
+        "outDir": "dist",
+        "target": "es5"
+    }
+}
