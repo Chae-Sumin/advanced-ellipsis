@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Ellipsis Demo</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Advanced Ellipsis Demo</title>
 </head>
-<script src="./dist/advanced-ellipsis.js"></script>
+<script src="dist/advanced-ellipsis.js"></script>
 <script>
-    var test = new AdvancedEllipsis('-test');
-    test.print();
+	document.addEventListener("ellipsis", function (e) {
+		console.log(e);
+	})
+	window.onload = function () {
+		var test = new AdvancedEllipsis({defalutStyles: true});
+		test.start();
+	}
 </script>
 <body>
-    <div style="width:200px;border:1px solid #f00;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<div data-ellipsis style="width:200px;border:1px solid #f00;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<div data-ellipsis data-ellipsis-show-option="flow" style="width:200px;border:1px solid #f00;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<div data-ellipsis data-ellipsis-show-option="title" style="width:200px;border:1px solid #f00;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
 </body>
 </html>

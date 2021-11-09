@@ -2,7 +2,10 @@
   "name": "advanced-ellipsis",
   "version": "0.0.0",
   "description": "Advanced ellipsis available in JS",
-  "main": "./dist",
+  "main": "./dist/advanced-ellipsis.js",
+  "files": [
+    "./dist/"
+  ],
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch"
