@@ -6,19 +6,22 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Advanced Ellipsis Demo</title>
 </head>
-<script src="dist/advanced-ellipsis.js"></script>
+<script src="./dist/advanced-ellipsis.js"></script>
 <script>
-	document.addEventListener("ellipsis", function (e) {
-		console.log(e);
-	})
+	// document.addEventListener("ellipsis", function (e) {
+	// 	console.log(e);
+	// })
+	var test;
 	window.onload = function () {
-		var test = new AdvancedEllipsis({defalutStyles: true});
+		test = new AdvancedEllipsis({defalutStyles: true});
 		test.start();
 	}
 </script>
 <body>
-	<div data-ellipsis style="width:200px;border:1px solid #f00;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
-	<div data-ellipsis data-ellipsis-show-option="flow" style="width:200px;border:1px solid #f00;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
-	<div data-ellipsis data-ellipsis-show-option="title" style="width:200px;border:1px solid #f00;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<div data-ellipsis style="width:200px;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<div data-ellipsis data-ellipsis-show-option="flow" data-ellipsis-flow-count="2" style="width:200px;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<!-- <div data-ellipsis data-ellipsis-show-option="flow-auto" style="width:200px;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div> -->
+	<div data-ellipsis data-ellipsis-show-option="title" style="width:200px;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<div data-ellipsis data-ellipsis-show-option="float" style="width:200px;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
 </body>
 </html>
