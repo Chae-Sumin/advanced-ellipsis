@@ -1,26 +1,26 @@
 {
-  "name": "advanced-ellipsis",
-  "version": "0.0.0",
-  "description": "Advanced ellipsis available in JS",
-  "main": "./dist/advanced-ellipsis.js",
-  "files": [
-    "./dist/"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Chae-Sumin/advanced-ellipsis.git"
-  },
-  "author": "Chae-Sumin (cotnmin)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Chae-Sumin/advanced-ellipsis/issues"
-  },
-  "homepage": "https://github.com/Chae-Sumin/advanced-ellipsis#readme",
-  "devDependencies": {
-    "typescript": "^4.4.4"
-  }
+	"name": "advanced-ellipsis",
+	"version": "0.0.0",
+	"description": "Advanced ellipsis available in JS",
+	"main": "./dist/advanced-ellipsis.esm.js",
+	"files": [
+		"./dist/"
+	],
+	"scripts": {
+		"build": "tsc",
+		"watch": "tsc --watch"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Chae-Sumin/advanced-ellipsis.git"
+	},
+	"author": "Chae-Sumin (cotnmin)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Chae-Sumin/advanced-ellipsis/issues"
+	},
+	"homepage": "https://github.com/Chae-Sumin/advanced-ellipsis#readme",
+	"devDependencies": {
+		"typescript": "^4.4.4"
+	}
 }

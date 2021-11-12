@@ -8,21 +8,21 @@
 </head>
 <script src="./dist/advanced-ellipsis.js"></script>
 <script>
-	var test;
+	var advancedEllipsis;
 	window.onload = function () {
-		test = new AdvancedEllipsis();
-		test.start();
-		test.setOptions({selector: '#asd'})
-		test.addElements('[data-ellipsis]')
-		test.start();
-		test.destory();
+		advancedEllipsis = new AdvancedEllipsis('[data-ellipsis], #asd');
+		advancedEllipsis.start();
+		window.addEventListener('resize', function (e) {
+			console.log(e);
+			advancedEllipsis.start();
+		})
 	};
 </script>
 <body>
 	<div data-ellipsis style="width:200px;border:1px solid #a33; white-space: nowrap; overflow: hidden;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
-	<div id="asd" data-ellipsis data-ellipsis-show-option="flow" data-ellipsis-flow-count="10" style="width:200px;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<div id="asd" data-ellipsis-show-option="flow" data-ellipsis-flow-count="10" style="width:200px;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
 	<div data-ellipsis data-ellipsis-show-option="flow-auto" style="width:200px;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
 	<div data-ellipsis data-ellipsis-show-option="title" style="width:200px;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
-	<div data-ellipsis data-ellipsis-show-option="float" style="width:200px;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<div data-ellipsis data-ellipsis-show-option="tooltip" style="width:100%;border:1px solid #a33;">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</div>
 </body>
 </html>
