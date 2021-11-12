@@ -22,5 +22,17 @@
 	"homepage": "https://github.com/Chae-Sumin/advanced-ellipsis#readme",
 	"devDependencies": {
 		"typescript": "^4.4.4"
-	}
+	},
+	"keywords": [
+	  "javascript",
+	  "vanilla javascript",
+	  "auto-ellipsis",
+	  "ellipsis",
+	  "elipsis",
+	  "flow",
+	  "tooltip",
+	  "html",
+	  "css",
+	  "truncate"
+	]
 }

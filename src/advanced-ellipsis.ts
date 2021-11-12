@@ -190,11 +190,6 @@ class AdvancedEllipsis {
 		const styles: CSSStyleDeclaration = node.element.style;
 		const data: DOMStringMap = node.element.dataset;
 		const showOption: string = data.hasOwnProperty('ellipsisShowOption') ? data.ellipsisShowOption : this.options.showOption;
-		if (this.options.defalutStyles) {
-			styles.textOverflow = node.beforeDefalutStyles.textOverflow;
-			styles.overflow = node.beforeDefalutStyles.overflow;
-			styles.whiteSpace = node.beforeDefalutStyles.whiteSpace;
-		}
 		node.element.dispatchEvent(new CustomEvent("addSetting", {
 			bubbles: true,
 			detail: {
@@ -220,6 +215,11 @@ class AdvancedEllipsis {
 		}
 		node.listener = null;
 		node.eventOn = false;
+		if (this.options.defalutStyles) {
+			styles.textOverflow = node.beforeDefalutStyles.textOverflow;
+			styles.overflow = node.beforeDefalutStyles.overflow;
+			styles.whiteSpace = node.beforeDefalutStyles.whiteSpace;
+		}
 	}
 	private checkEllipsis(element: HTMLElement): number {
 		return element.scrollWidth > element.offsetWidth ? element.scrollWidth - element.offsetWidth : 0;
@@ -252,12 +252,19 @@ class AdvancedEllipsis {
 		node.element.style.textOverflow = 'clip';
 		node.eventOn = true;
 		const flowAnitate = (timestamp) => {
-			if (!node.eventOn) return;
+			if (!node.eventOn) {
+				node.element.style.transition = 'none';
+				node.element.style.textIndent = '0';
+				return;
+			}
 			if (!start) start = timestamp;
 			const timediff: number = timestamp - start;
 			if (repeatCount > 0) {
-				node.element.style.transition = 'text-indent ' + duration + 'ms ' + delay + 'ms linear';
-				node.element.style.textIndent = '-' + length + 'px';
+				const newTransition: string = 'text-indent ' + duration + 'ms ' + delay + 'ms linear'
+				if (newTransition !== node.element.style.transition) {
+					node.element.style.transition = 'text-indent ' + duration + 'ms ' + delay + 'ms linear';
+					node.element.style.textIndent = '-' + length + 'px';
+				}
 				if (timediff >= delay + duration + afterDelay) {
 					repeatCount--;
 					node.element.style.transition = 'none';
@@ -277,7 +284,10 @@ class AdvancedEllipsis {
 	private tooltipListener(node: ellipsisNode): EventListener {
 		const floatElement: HTMLElement = document.createElement("div");
 		floatElement.id = node.element.dataset.tooltipElementId;
-		floatElement.classList.add(...this.options.tooltipElementClass.split(' '));
+		const newClass = node.element.dataset.tooltipElementClass || this.options.tooltipElementClass;
+		if (newClass) {
+			floatElement.classList.add(...newClass.split(' '));
+		}
 		const listener: EventListener = (event: MouseEvent) => {
 			if (!node.eventOn) {
 				floatElement.innerText = node.element.innerText;

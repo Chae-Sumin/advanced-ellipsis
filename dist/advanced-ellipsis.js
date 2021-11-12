@@ -167,11 +167,6 @@ var AdvancedEllipsis = /** @class */ (function () {
         var styles = node.element.style;
         var data = node.element.dataset;
         var showOption = data.hasOwnProperty('ellipsisShowOption') ? data.ellipsisShowOption : this.options.showOption;
-        if (this.options.defalutStyles) {
-            styles.textOverflow = node.beforeDefalutStyles.textOverflow;
-            styles.overflow = node.beforeDefalutStyles.overflow;
-            styles.whiteSpace = node.beforeDefalutStyles.whiteSpace;
-        }
         node.element.dispatchEvent(new CustomEvent("addSetting", {
             bubbles: true,
             detail: {
@@ -197,6 +192,11 @@ var AdvancedEllipsis = /** @class */ (function () {
         }
         node.listener = null;
         node.eventOn = false;
+        if (this.options.defalutStyles) {
+            styles.textOverflow = node.beforeDefalutStyles.textOverflow;
+            styles.overflow = node.beforeDefalutStyles.overflow;
+            styles.whiteSpace = node.beforeDefalutStyles.whiteSpace;
+        }
     };
     AdvancedEllipsis.prototype.checkEllipsis = function (element) {
         return element.scrollWidth > element.offsetWidth ? element.scrollWidth - element.offsetWidth : 0;
@@ -230,14 +230,20 @@ var AdvancedEllipsis = /** @class */ (function () {
         node.element.style.textOverflow = 'clip';
         node.eventOn = true;
         var flowAnitate = function (timestamp) {
-            if (!node.eventOn)
+            if (!node.eventOn) {
+                node.element.style.transition = 'none';
+                node.element.style.textIndent = '0';
                 return;
+            }
             if (!start)
                 start = timestamp;
             var timediff = timestamp - start;
             if (repeatCount > 0) {
-                node.element.style.transition = 'text-indent ' + duration + 'ms ' + delay + 'ms linear';
-                node.element.style.textIndent = '-' + length + 'px';
+                var newTransition = 'text-indent ' + duration + 'ms ' + delay + 'ms linear';
+                if (newTransition !== node.element.style.transition) {
+                    node.element.style.transition = 'text-indent ' + duration + 'ms ' + delay + 'ms linear';
+                    node.element.style.textIndent = '-' + length + 'px';
+                }
                 if (timediff >= delay + duration + afterDelay) {
                     repeatCount--;
                     node.element.style.transition = 'none';
@@ -261,7 +267,10 @@ var AdvancedEllipsis = /** @class */ (function () {
         var _this = this;
         var floatElement = document.createElement("div");
         floatElement.id = node.element.dataset.tooltipElementId;
-        (_a = floatElement.classList).add.apply(_a, this.options.tooltipElementClass.split(' '));
+        var newClass = node.element.dataset.tooltipElementClass || this.options.tooltipElementClass;
+        if (newClass) {
+            (_a = floatElement.classList).add.apply(_a, newClass.split(' '));
+        }
         var listener = function (event) {
             if (!node.eventOn) {
                 floatElement.innerText = node.element.innerText;

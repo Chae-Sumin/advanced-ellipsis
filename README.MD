@@ -1,6 +1,6 @@
-# Vue Numeric Keypad [![npm](https://img.shields.io/npm/v/advanced-ellipsis)](https://www.npmjs.com/package/advanced-ellipsis)
+# Advanced Ellipsis
 
-
+> It provides advanced ellipsis capabilities when the content box is small and only a part of the content needs to be shown, and part of the content is important.
 
 ## Usage
 
@@ -51,22 +51,22 @@ const advancedEllipsis = new AdvancedEllipsis( $selector | $options );
 ### Methods
 |Methods|Description|Parameter|Parameter type|return|
 |-|-|-|-|-|
-|`start`|Set elipsis according to the set `options` and `props`.|-|-|-|
-|`destroy`|Restore the elipsis set through the `start()`|-|-|-|
+|`start`|Set ellipsis according to the set `options` and `attributes`.|-|-|-|
+|`destroy`|Restore the ellipsis set through the `start()`|-|-|-|
 |`setElements`|Reset elements to `$selector`.<br>Since `destroy()` is called, `start()` should be called again.|`$selector`|string|-|-|
 |`addElements`|Add elements as `$selector`.<br>You need to call `start()` for the added elements.<br>(Automatically prevents overlapping)|`$selector`|string|-|
 |`getElements`|Returns the currently added `elements`.<br>(Includes elements that haven't started)|-|-|Array&lt;HTMLElement&gt;|
 |`setOptions`|Set `$options` and Run `setElements(option.selector)`<br>(see options below for content)|`$options`|object|-|
 
 
-## Options and Props
+## Options and Attributes
 
 ### common options
 |Option|Description|Type|Default|
 |-|-|-|-|
 |`defalutStyles`|If the value is true, apply ellipsis by default. If false, you have to modify the style yourself to ellipsis.|boolean|true|
 |`useCloneNode`|If the value is true, use cloneNode to determine ellipsis. If false, use scrollWidth.|boolean|false|
-|`showOption`|It gives special effects to ellipsis processed nodes.<br>`'static'`: I only apply ellipsis.<br>`'flow'`: Text flows sideways when a mouse hover or touch is touched.<br>`'flow-auto'`: Text automatically flows sideways.<br>`'tooltip'`: Text flows sideways when a mouse hover or touch is touched.|string|'static'|
+|`showOption`|It gives special effects to ellipsis processed nodes.<br>`'static'`: I only apply ellipsis.<br>`'flow'`: Text flows sideways when a mouse hover or touch is touched.<br>`'flow-auto'`: Text automatically flows sideways.<br>`'title'`: Insert innerText into Title Attributes. (Hard to check on mobile devices)<br>`'tooltip'`: Text flows sideways when a mouse hover or touch is touched.|string|'static'|
 |`selector`|Selector to select nodes to which ellipsis will be applied.|string|'[data-ellipsis]'|
 
 ### flow options
@@ -88,14 +88,14 @@ When `showOption` or `data-ellipsis-show-option` is `'tooltip'`
 |`tooltipDuration`|The time when the tool tip is maintained. (unit: ms)|number|Default|
 |`customTooltipStyle`|Apply custom style to tool tip.|object|{ }|
 
-### props
+### attributes
 If the element has the following prop, overwrite the options.
 >
 example:
 ``` html
 <div data-ellipsis data-ellipsis-show-option="flow-auto">ellipsis text...</div>
 ```
-|Props|Description|
+|Attributes|Description|
 |-|-|
 |`data-ellipsis-show-option`|The class applied to the tooltip that is created.|
 |`data-ellipsis-flow-count`|The number of flows<br>(overwrite both `flowCount` and `flowAutoCount`)|
