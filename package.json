@@ -1,10 +1,10 @@
 {
 	"name": "advanced-ellipsis",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Advanced ellipsis available in JS",
-	"main": "./dist/advanced-ellipsis.esm.js",
+	"main": "dist/advanced-ellipsis.esm.js",
 	"files": [
-		"./dist/"
+		"dist/*"
 	],
 	"scripts": {
 		"build": "tsc",
