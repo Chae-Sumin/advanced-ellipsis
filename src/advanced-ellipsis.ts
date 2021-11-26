@@ -1,8 +1,8 @@
-interface classOptions extends Object {
+interface ClassOptions extends Object { // 옵션 인터페이스
+	mutationObserver ?: boolean
 	defalutStyles?: boolean;
 	useCloneNode?: boolean;
 	showOption?: string;
-	selector?: string;
 
 	flowDelay?: number, // ms
 	flowAfterDelay?: number, // ms
@@ -13,44 +13,78 @@ interface classOptions extends Object {
 
 	tooltipElementClass?: string,
 	tooltipDuration?: number, // ms
-	customTooltipStyle?: object,
+	customTooltipStyles?: object,
 }
-interface ellipsisNode extends Object {
+
+interface EllipsisNode extends Object { // ellipsis 요소별 노드
 	element: HTMLElement; // HTML 요소
+	originalElement: HTMLElement;
+	showOption: string;
 	eventOn: Boolean; // 이벤트 중 중복 이벤트 방지
 	timer: ReturnType<typeof setTimeout>; // 이벤트 타이머
 	listener: EventListener; // 이벤트 리스너 관리
-	beforeDefalutStyles: beforeDefalutStyles;
 }
-interface beforeDefalutStyles extends Object {
-	textOverflow: string;
-	overflow: string;
-	whiteSpace: string;
+
+
+interface EllipsisOptions extends Object { // ellipsis 요소별 노드
+	originalElement: HTMLElement;
+	showOption: string;
+	eventOn: Boolean; // 이벤트 중 중복 이벤트 방지
+	timer: ReturnType<typeof setTimeout>; // 이벤트 타이머
+	listener: EventListener; // 이벤트 리스너 관리
 }
+
+
 class AdvancedEllipsis {
+	private selector: string
 	private isStart: boolean = false;
-	private nodes: Array<ellipsisNode> = [];
-	private options: classOptions = {
-		defalutStyles: true,
-		useCloneNode: false,
-		showOption: 'static',
-		selector: '[data-ellipsis]',
-		flowDelay: 1000, // 애니메이션 시작 전 시간
-		flowAfterDelay: 1000, // 애니메이션 끝나고 초기화 대기 시간
-		flowSpeed: 50, // 애미메이션 스피드
-		flowPadding: 20, // flow를 얼마나 더 끌고 갈지
-		flowCount: 1, // flow 기본 횟수
-		flowAutoCount: Infinity, // flow-auto 기본 횟수
-		tooltipElementClass: 'ellipsis_tooltip_box',
-		tooltipDuration: 2000,
-		customTooltipStyle: {},
-	};
-	private defalutTooltipStyle: Function = (event: MouseEvent | TouchEvent): object => {
+	private elements: Array<HTMLElement> = [];
+	private options: ClassOptions
+	private observer: MutationObserver = new MutationObserver(function (mutations: Array<MutationRecord>) {
+		mutations.forEach(mutation => {
+			if (mutation.attributeName === 'style') return;
+			if (mutation.target.childNodes.length === 1 && mutation.target.childNodes[0].nodeType === 3) {
+				this.addSetting(mutation.target);
+				console.log(mutation);
+			}
+		});
+	}.bind(this));
+	// public methods
+	public start(): boolean { // 노드들의 옵션에 따라 노드 이벤트 등록
+		if (this.elements.length) {
+			this.elements.forEach(this.addSetting.bind(this));
+			this.isStart = true;
+		}
+		return this.isStart;
+	}
+	public destroy(): boolean {
+		if (this.elements.length) {
+			this.elements.forEach(this.removeSetting.bind(this));
+			this.isStart = false;
+		}
+		return this.isStart;
+	}
+	public setElements(selector: string): AdvancedEllipsis { // 요소를 설정
+		if (!selector) return;
+		this.destroy();
+		this.selector = selector;
+		return this;
+	}
+	// public getElements(): Array<HTMLElement> {
+	// 	return this.elements.map((node: EllipsisNode) => node.element);
+	// }
+	public setOptions(options: ClassOptions): AdvancedEllipsis { // 옵션을 설정
+		this.options = options;
+		// this.objectOverwrite(this.options, options);
+		return this;
+	}
+	// private methods
+	private defalutTooltipStyles: Function = (event: MouseEvent | TouchEvent): object => {
 		const X = event.type === "touchend" ? (<TouchEvent>event).changedTouches[0].clientX : (<MouseEvent>event).clientX;
 		const Y = event.type === "touchend" ? (<TouchEvent>event).changedTouches[0].clientY : (<MouseEvent>event).clientY;
 		const isLeft: Boolean = X < window.innerWidth / 2;
 		const isTop: Boolean = Y < window.innerHeight / 2;
-		const boxGap = 10;
+		const boxGap: number = 10;
 		return {
 			width: 'auto',
 			height: 'auto',
@@ -66,254 +100,229 @@ class AdvancedEllipsis {
 			bottom: !isTop ? Math.floor(window.innerHeight - Y + boxGap) + 'px' : 'unset',
 		}
 	}
-	private objectOverwrite(obj1: object, obj2: object) {
+	private objectOverwrite(obj1: object, obj2: object, propertyOverwrite?: boolean): object {
 		if (typeof obj1 !== 'object' || typeof obj2 !== 'object') return;
 		Object.keys(obj2).forEach(function (key: string) {
-			if (obj1.hasOwnProperty(key)) {
+			if (propertyOverwrite || obj1.hasOwnProperty(key)) {
 				obj1[key] = obj2[key];
 			}
 		});
+		return obj1;
 	}
-	constructor(options: classOptions | string) {
-		if (typeof options === 'string') {
-			this.setElements(options);
-		} else {
-			this.setOptions(<classOptions>options || {});
-		}
-	}
-	start(): void { // 노드들의 옵션에 따라 노드 이벤트 등록
-		if (this.nodes.length) {
-			this.nodes.forEach(this.addSetting.bind(this));
-			this.isStart = true;
-		}
-	}
-	destroy(): void {
-		if (!this.isStart) return;
-		if (this.nodes.length) {
-			this.nodes.forEach(this.removeSetting.bind(this));
-			this.nodes = [];
-			this.isStart = false;
-		}
-	}
-	setElements(selector: string): void { // 요소를 설정
-		this.destroy();
-		this.options.selector = selector;
-		const elements = document.querySelectorAll(selector);
-		elements.forEach((element: HTMLElement) => {
-			const node: ellipsisNode = {
-				element: element,
-				eventOn: false,
-				timer: null,
-				listener: null,
-				beforeDefalutStyles: {
-					textOverflow: element.style.textOverflow,
-					overflow: element.style.overflow,
-					whiteSpace: element.style.whiteSpace
-				}
-			}
-			this.nodes.push(node);
-		});
-	}
-	addElements(selector: string): void { // 요소를 추가
-		this.options.selector += `, ${selector}`;
-		const elements = document.querySelectorAll(selector);
-		const nodes = this.nodes;
-		elements.forEach((element: HTMLElement) => {
-			if (nodes.some(node => element === node.element)) return; // 중복 제거
-			const node: ellipsisNode = {
-				element: element,
-				eventOn: false,
-				timer: null,
-				listener: null,
-				beforeDefalutStyles: {
-					textOverflow: element.style.textOverflow,
-					overflow: element.style.overflow,
-					whiteSpace: element.style.whiteSpace
-				}
-			}
-			nodes.push(node);
-		});
-	}
-	getElements(): Array<HTMLElement> {
-		return this.nodes.map((node: ellipsisNode) => node.element);
-	}
-	setOptions(options: classOptions): void { // 옵션을 설정
-		this.objectOverwrite(this.options, options);
-		this.setElements(this.options.selector);
-	}
-	private addSetting(node: ellipsisNode): void {
-		if (node.listener) return;
-		const styles: CSSStyleDeclaration = node.element.style;
-		const data: DOMStringMap = node.element.dataset;
+	private addSetting(element: HTMLElement): void {
+		const option = element['options'];
+		if (option.showOption) this.removeSetting(element);
 		if (this.options.defalutStyles) {
-			styles.textOverflow = 'ellipsis';
-			styles.overflow = 'hidden';
-			styles.whiteSpace = 'nowrap';
+			this.objectOverwrite(element.style, {
+				textOverflow: 'ellipsis',
+				overflow: 'hidden',
+				whiteSpace: 'nowrap',
+			})
 		}
-		const showOption: string = data.hasOwnProperty('ellipsisShowOption') ? data.ellipsisShowOption : (this.options.showOption || 'static')
-		const lengthDiff: number = this.options.useCloneNode ? this.checkEllipsisUseCloneNode(node.element) : this.checkEllipsis(node.element);
+		console.log(element.dataset);
+		option.showOption = element.dataset.hasOwnProperty('ellipsisShowOption') ? element.dataset.ellipsisShowOption : (this.options.showOption || 'static');
+		const lengthDiff: number = this.checkEllipsis(element, this.options.useCloneNode);
 		if (lengthDiff) {
-			node.element.dispatchEvent(new CustomEvent("addSetting", {
-				bubbles: true,
-				detail: {
-					element: node.element,
-					ellipsised: Boolean(lengthDiff),
-					lengthDiff: lengthDiff,
-					showOption: showOption,
-				}
-			}));
-			switch (showOption) {
+			if (this.options.mutationObserver) {this.observer.observe(element, {childList: true, attributes : true});}
+			switch (option.showOption) {
 				case 'flow':
-					const flow_listener = this.flowListener(node, lengthDiff);
-					node.listener = flow_listener;
-					node.element.addEventListener('mouseover', node.listener);
+					const flow_listener = this.flowListener(element, lengthDiff);
+					option.listener = flow_listener;
+					element.addEventListener('mouseover', option.listener);
 					break;
 				case 'flow-auto':
-					const count = parseFloat(node.element.dataset.ellipsisFlowCount) || this.options.flowAutoCount || Infinity;
-					this.flowAnitate(node, lengthDiff, count);
-					break;
-				case 'title':
-					this.titleText(node);
+					const count = parseFloat(element.dataset.ellipsisFlowCount) || this.options.flowAutoCount || Infinity;
+					this.flowAnitate(element, lengthDiff, count);
 					break;
 				case 'tooltip':
-					const tooltip_listener = this.tooltipListener(node);
-					node.listener = tooltip_listener;
-					node.element.addEventListener('mouseover', node.listener);
-					node.element.addEventListener('touchend', node.listener);
+					const tooltip_listener = this.tooltipListener(element);
+					option.listener = tooltip_listener;
+					element.addEventListener('mouseover', option.listener);
+					element.addEventListener('touchend', option.listener);
 					break;
 				default:
 					break;
 			}
 		}
 	}
-	private removeSetting(node: ellipsisNode): void {
-		const styles: CSSStyleDeclaration = node.element.style;
-		const data: DOMStringMap = node.element.dataset;
-		const showOption: string = data.hasOwnProperty('ellipsisShowOption') ? data.ellipsisShowOption : this.options.showOption;
-		node.element.dispatchEvent(new CustomEvent("addSetting", {
-			bubbles: true,
-			detail: {
-				element: node.element,
-				showOption: showOption,
-			}
-		}));
-		switch (showOption) {
+	private removeSetting(element: HTMLElement): void {
+		const option = element['options'];
+		// remove listener
+		switch (option.showOption) {
 			case 'flow':
-				node.element.removeEventListener('mouseover', node.listener);
+				element.removeEventListener('mouseover', option.listener);
 				break;
 			case 'flow-auto':
 				break;
-			case 'title':
-				node.element.title = '';
-				break;
 			case 'tooltip':
-				node.element.removeEventListener('mouseover', node.listener);
-				node.element.removeEventListener('touchend', node.listener);
+				element.removeEventListener('mouseover', option.listener);
+				element.removeEventListener('touchend', option.listener);
 				break;
 			default:
 				break;
 		}
-		node.listener = null;
-		node.eventOn = false;
-		if (this.options.defalutStyles) {
-			styles.textOverflow = node.beforeDefalutStyles.textOverflow;
-			styles.overflow = node.beforeDefalutStyles.overflow;
-			styles.whiteSpace = node.beforeDefalutStyles.whiteSpace;
-		}
+		this.objectOverwrite(option, {
+			showOption: '',
+			eventOn: false,
+			timer: null,
+			listener: null,
+		});
+		this.objectOverwrite(element.style, option.originalElement.style);
 	}
-	private checkEllipsis(element: HTMLElement): number {
+	private checkEllipsis(element: HTMLElement, useCloneNode?: Boolean): number {
+		if (useCloneNode) {
+			const contrast: HTMLElement = <HTMLElement>element.cloneNode(true);
+			contrast.style.display = 'inline';
+			contrast.style.width = 'auto';
+			contrast.style.visibility = 'hidden';
+			element.parentNode.appendChild(contrast)
+			const res: number = contrast.offsetWidth > element.offsetWidth ? contrast.offsetWidth - element.offsetWidth : 0;
+			element.parentNode.removeChild(contrast);
+			return res;
+		}
 		return element.scrollWidth > element.offsetWidth ? element.scrollWidth - element.offsetWidth : 0;
 	}
-	private checkEllipsisUseCloneNode(element: HTMLElement): number {
-		const contrast: HTMLElement = <HTMLElement>element.cloneNode(true);
-		contrast.style.display = 'inline';
-		contrast.style.width = 'auto';
-		contrast.style.visibility = 'hidden';
-		element.parentNode.appendChild(contrast)
-		const res: number = contrast.offsetWidth > element.offsetWidth ? contrast.offsetWidth - element.offsetWidth : 0;
-		element.parentNode.removeChild(contrast);
-		return res;
-	}
-	private flowListener(node: ellipsisNode, length: number): EventListener {
-		const count: number = parseFloat(node.element.dataset.ellipsisFlowCount);
-		const listener: EventListener = () => {
-			if (!node.eventOn) {
-				this.flowAnitate(node, length, count);
-			}
-		}
-		return listener;
-	}
-	private flowAnitate(node: ellipsisNode, length: number, repeatCount?: number): void {
+	private flowAnitate(element: HTMLElement, length: number, repeatCount?: number): void {
+		const option = element['options'];
 		length = length + this.options.flowPadding;
 		let start: number = null;
 		const duration: number = length / this.options.flowSpeed * 1000;
 		const delay: number = this.options.flowDelay;
 		const afterDelay: number = this.options.flowAfterDelay;
-		node.element.style.textOverflow = 'clip';
-		node.eventOn = true;
+		element.style.textOverflow = 'clip';
+		option.eventOn = true;
 		const flowAnitate = (timestamp) => {
-			if (!node.eventOn) {
-				node.element.style.transition = 'none';
-				node.element.style.textIndent = '0';
+			if (!option.eventOn) {
+				element.style.transition = 'none';
+				element.style.textIndent = '0';
 				return;
 			}
 			if (!start) start = timestamp;
 			const timediff: number = timestamp - start;
 			if (repeatCount > 0) {
 				const newTransition: string = 'text-indent ' + duration + 'ms ' + delay + 'ms linear'
-				if (newTransition !== node.element.style.transition) {
-					node.element.style.transition = 'text-indent ' + duration + 'ms ' + delay + 'ms linear';
-					node.element.style.textIndent = '-' + length + 'px';
+				if (newTransition !== element.style.transition) {
+					element.style.transition = 'text-indent ' + duration + 'ms ' + delay + 'ms linear';
+					element.style.textIndent = '-' + length + 'px';
 				}
 				if (timediff >= delay + duration + afterDelay) {
 					repeatCount--;
-					node.element.style.transition = 'none';
-					node.element.style.textIndent = '0';
+					element.style.transition = 'none';
+					element.style.textIndent = '0';
 					start = timestamp;
 					window.requestAnimationFrame(flowAnitate);
 				} else {
 					window.requestAnimationFrame(flowAnitate);
 				}
 			} else {
-				node.element.style.textOverflow = 'ellipsis';
-				node.eventOn = false;
+				element.style.textOverflow = 'ellipsis';
+				option.eventOn = false;
 			}
 		}
 		window.requestAnimationFrame(flowAnitate);
 	}
-	private tooltipListener(node: ellipsisNode): EventListener {
+	// event listener
+	private flowListener(element: HTMLElement, length: number): EventListener {
+		const option = element['options'];
+		const count: number = element.dataset.ellipsisFlowCount ? parseFloat(element.dataset.ellipsisFlowCount) : this.options.flowCount;
+		return (): void => {
+			if (!option.eventOn) {
+				this.flowAnitate(element, length, count);
+			}
+		}
+	}
+	private tooltipListener(element: HTMLElement): EventListener {
+		const option = element['options'];
 		const floatElement: HTMLElement = document.createElement("div");
-		floatElement.id = node.element.dataset.tooltipElementId;
-		const newClass = node.element.dataset.tooltipElementClass || this.options.tooltipElementClass;
+		floatElement.id = element.dataset.tooltipElementId;
+		const newClass = element.dataset.tooltipElementClass || this.options.tooltipElementClass;
 		if (newClass) {
 			floatElement.classList.add(...newClass.split(' '));
 		}
-		const listener: EventListener = (event: MouseEvent) => {
-			if (!node.eventOn) {
-				floatElement.innerText = node.element.innerText;
-				this.objectOverwrite(floatElement.style, this.defalutTooltipStyle(event));
-				this.objectOverwrite(floatElement.style, this.options.customTooltipStyle);
+		return (event: MouseEvent): void => {
+			if (!option.eventOn) {
+				floatElement.innerText = element.innerText;
+				this.objectOverwrite(floatElement.style, this.defalutTooltipStyles(event));
+				this.objectOverwrite(floatElement.style, this.options.customTooltipStyles);
 				document.body.appendChild(floatElement);
-				node.eventOn = true;
-				node.timer = setTimeout(function () {
+				option.eventOn = true;
+				option.timer = setTimeout(function () {
 					document.body.removeChild(floatElement);
-					clearTimeout(node.timer);
-					node.eventOn = false;
+					clearTimeout(option.timer);
+					option.eventOn = false;
 				}.bind(this), this.options.tooltipDuration);
 			} else {
-				this.objectOverwrite(floatElement.style, this.defalutTooltipStyle(event));
-				this.objectOverwrite(floatElement.style, this.options.customTooltipStyle);
-				clearTimeout(node.timer);
-				node.timer = setTimeout(function () {
+				this.objectOverwrite(floatElement.style, this.defalutTooltipStyles(event));
+				this.objectOverwrite(floatElement.style, this.options.customTooltipStyles);
+				clearTimeout(option.timer);
+				option.timer = setTimeout(function () {
 					document.body.removeChild(floatElement);
-					clearTimeout(node.timer);
-					node.eventOn = false;
+					clearTimeout(option.timer);
+					option.eventOn = false;
 				}.bind(this), this.options.tooltipDuration);
 			}
 		}
-		return listener;
 	}
-	private titleText(node: ellipsisNode): void {
-		node.element.title = node.element.innerText;
+	constructor(options: ClassOptions | string, selector: string) {
+		const hidden = {};
+		Object.defineProperty(this, 'selector', {
+			get: function (): string {
+				return hidden['selector'];
+			},
+			set: function (value: string) {
+				const elements = document.querySelectorAll(value);
+				if (!elements.length) return;
+				elements.forEach((element: HTMLElement) => {
+					if (element.childNodes.length === 1 && element.childNodes[0].nodeType === 3) {
+						const ellipsisOption: EllipsisOptions = {
+							originalElement: <HTMLElement>element.cloneNode(true),
+							showOption: '',
+							eventOn: false,
+							timer: null,
+							listener: null,
+						}
+						element['options'] = ellipsisOption;
+						this.elements.push(element);
+					}
+				});
+				hidden['selector'] = value;
+			}
+		});
+		Object.defineProperty(this, 'options', {
+			get: function (): ClassOptions {
+				return this.objectOverwrite({}, hidden['options'], true);
+			},
+			set: function (value: Array<any>) {
+				if (hidden['options']) this.objectOverwrite(hidden['options'], value);
+				else hidden['options'] = value;
+			}
+		});
+		this.selector = '[data-ellipsis]';
+		this.options = {
+			mutationObserver: true, // 변경 감지
+			defalutStyles: true,
+			useCloneNode: false,
+			showOption: 'static',
+			flowDelay: 1000, // 애니메이션 시작 전 시간
+			flowAfterDelay: 1000, // 애니메이션 끝나고 초기화 대기 시간
+			flowSpeed: 50, // 애미메이션 스피드
+			flowPadding: 20, // flow를 얼마나 더 끌고 갈지
+			flowCount: 1, // flow 기본 횟수
+			flowAutoCount: Infinity, // flow-auto 기본 횟수
+			tooltipElementClass: 'ellipsis_tooltip_box',
+			tooltipDuration: 2000,
+			customTooltipStyles: {},
+		};
+
+
+
+
+		if (typeof selector === 'string') {
+			this.setElements(selector);
+		} else if (typeof options === 'string') {
+			this.setElements(options);
+		} else if (typeof options === 'object') {
+			this.setOptions(<ClassOptions>options);
+		}
 	}
 }

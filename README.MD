@@ -1,5 +1,7 @@
 # Advanced Ellipsis
 
+> this is not yet finished
+>
 > It provides advanced ellipsis capabilities when the content box is small and only a part of the content needs to be shown, and part of the content is important.
 
 ## Usage
@@ -35,12 +37,12 @@ advancedEllipsis.start();
 </script>
 ```
 
-
+<br><br>
 ## Demo
 
 https://chae-sumin.github.io/advanced-ellipsis/
 
-
+<br><br>
 ## Methods
 
 ### constructor
@@ -54,21 +56,20 @@ const advancedEllipsis = new AdvancedEllipsis( $selector | $options );
 |`start`|Set ellipsis according to the set `options` and `attributes`.|-|-|-|
 |`destroy`|Restore the ellipsis set through the `start()`|-|-|-|
 |`setElements`|Reset elements to `$selector`.<br>Since `destroy()` is called, `start()` should be called again.|`$selector`|string|-|-|
-|`addElements`|Add elements as `$selector`.<br>You need to call `start()` for the added elements.<br>(Automatically prevents overlapping)|`$selector`|string|-|
 |`getElements`|Returns the currently added `elements`.<br>(Includes elements that haven't started)|-|-|Array&lt;HTMLElement&gt;|
 |`setOptions`|Set `$options` and Run `setElements(option.selector)`<br>(see options below for content)|`$options`|object|-|
 
-
+<br><br>
 ## Options and Attributes
 
 ### common options
 |Option|Description|Type|Default|
 |-|-|-|-|
-|`defalutStyles`|If the value is true, apply ellipsis by default. If false, you have to modify the style yourself to ellipsis.|boolean|true|
-|`useCloneNode`|If the value is true, use cloneNode to determine ellipsis. If false, use scrollWidth.|boolean|false|
-|`showOption`|It gives special effects to ellipsis processed nodes.<br>`'static'`: I only apply ellipsis.<br>`'flow'`: Text flows sideways when a mouse hover or touch is touched.<br>`'flow-auto'`: Text automatically flows sideways.<br>`'title'`: Insert innerText into Title Attributes. (Hard to check on mobile devices)<br>`'tooltip'`: Text flows sideways when a mouse hover or touch is touched.|string|'static'|
+|`defalutStyles`|If the value is true, apply ellipsis by default.<br>If false, you have to modify the style yourself to ellipsis.|boolean|true|
+|`useCloneNode`|If the value is true, use cloneNode to determine ellipsis.<br>If false, use scrollWidth.|boolean|false|
+|`showOption`|It gives special effects to ellipsis processed nodes.<br>`'static'`: I only apply ellipsis.<br>`'flow'`: Text flows sideways when a mouse hover or touch is touched.<br>`'flow-auto'`: Text automatically flows sideways.<br>`'tooltip'`: Text flows sideways when a mouse hover or touch is touched.|string|'static'|
 |`selector`|Selector to select nodes to which ellipsis will be applied.|string|'[data-ellipsis]'|
-
+___
 ### flow options
 When `showOption` or `data-ellipsis-show-option` is `'flow'` or `'flow-auto'`
 |Option|Description|Type|Unit|Default|
@@ -79,15 +80,15 @@ When `showOption` or `data-ellipsis-show-option` is `'flow'` or `'flow-auto'`
 |`flowPadding`|Add the space at the end as the text flows.|number|px|20|
 |`flowCount`|The number of flows at once when the `showOption` is `'flow'`.|number|Unit|1|
 |`flowAutoCount`|The number of flows when `showOption` is `'flow-auto'`.|number|Unit|Infinity|
-
+___
 ### tooltip options
 When `showOption` or `data-ellipsis-show-option` is `'tooltip'`
 |Option|Description|Type|Default|
 |-|-|-|-|
-|`tooltipElementClass`|The class applied to the tooltip that is created.|string|'ellipsis_tooltip_box'|
+|`tooltipElementClass`|The class applied to the tooltip that is created.<br>(Strings separated by spacebars)|string|'ellipsis_tooltip_box'|
 |`tooltipDuration`|The time when the tool tip is maintained. (unit: ms)|number|Default|
-|`customTooltipStyle`|Apply custom style to tool tip.|object|{ }|
-
+|`customTooltipStyles`|Apply custom style to tool tip.|object|{ }|
+___
 ### attributes
 If the element has the following prop, overwrite the options.
 >
@@ -100,9 +101,23 @@ example:
 |`data-ellipsis-show-option`|The class applied to the tooltip that is created.|
 |`data-ellipsis-flow-count`|The number of flows<br>(overwrite both `flowCount` and `flowAutoCount`)|
 |`data-tooltip-element-id`|The class applied to the tooltip that is created.|
-|`data-tooltip-element-class`|The id applied to the tooltip that is created.|
+|`data-tooltip-element-class`|The id applied to the tooltip that is created.<br>(Strings separated by spacebars)|
 
+<br><br>
+## tip
 
+Always follow the priority below
+
+Options
+> `Attributes` > `custom Options` > `default Options`
+___
+Tooltip Element Class
+> `Attributes` > `tooltipElementClass`
+___
+Tooltip Element Styles
+> `!important styles` > `customTooltipStyles` > `defalutTooltipStyles` > `User-entered inline styles` > `css styles`
+>
+>`customTooltipStyles` and `defalutTooltipStyles` will be override `User-entered inline styles`
 
 ## License
 

@@ -10,6 +10,10 @@
 <script>
 	var advancedEllipsis;
 	window.onload = function () {
+		var a = document.querySelectorAll('[data-ellipsis]');
+		a[0].addEventListener('click', function (e) {
+			console.log(e);
+		})
 		advancedEllipsis = new AdvancedEllipsis();
 		// advancedEllipsis.start();
 	};
@@ -25,12 +29,12 @@
 		<a class="btn" href="javascript:advancedEllipsis.start();">start()</a>
 		<a class="btn" href="javascript:advancedEllipsis.destroy();">destroy()</a>
 		<a class="btn" href="javascript:advancedEllipsis.setElements('[data-ellipsis]');">setElements('[data-ellipsis]')</a>
-		<a class="btn" href="javascript:advancedEllipsis.addElements('[data-ellipsis]');">addElements('[data-ellipsis]')</a>
+		<a class="btn" href="javascript:advancedEllipsis.setOptions({flowSpeed: 500});">setOptions({flowSpeed: 500})</a>
 		<a class="btn" href="javascript:advancedEllipsis.setElements('#asd');">setElements('#asd')</a>
 		<a class="btn" href="javascript:advancedEllipsis.addElements('#asd');">addElements('#asd')</a>
 	</div>
 	<div class="box" data-ellipsis>just data-ellipsis just data-ellipsis just data-ellipsis</div>
-	<div class="box" id="asd" data-ellipsis-show-option="flow" data-ellipsis-flow-count="2">id="asd" data-ellipsis-show-option="flow" data-ellipsis-flow-count="2"</div>
+	<div class="box" data-ellipsis id="asd" data-ellipsis-show-option="flow" data-ellipsis-flow-count="2">id="asd" data-ellipsis-show-option="flow" data-ellipsis-flow-count="2"</div>
 	<div class="box" data-ellipsis data-ellipsis-show-option="flow-auto">data-ellipsis data-ellipsis-show-option="flow-auto"</div>
 	<div class="box" data-ellipsis data-ellipsis-show-option="title">data-ellipsis data-ellipsis-show-option="title"</div>
 	<div class="box" data-ellipsis data-ellipsis-show-option="tooltip">data-ellipsis data-ellipsis-show-option="tooltip"</div>

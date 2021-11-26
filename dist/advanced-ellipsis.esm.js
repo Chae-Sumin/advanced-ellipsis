@@ -2,22 +2,15 @@ var AdvancedEllipsis = /** @class */ (function () {
     function AdvancedEllipsis(options) {
         this.isStart = false;
         this.nodes = [];
-        this.options = {
-            defalutStyles: true,
-            useCloneNode: false,
-            showOption: 'static',
-            selector: '[data-ellipsis]',
-            flowDelay: 1000,
-            flowAfterDelay: 1000,
-            flowSpeed: 50,
-            flowPadding: 20,
-            flowCount: 1,
-            flowAutoCount: Infinity,
-            tooltipElementClass: 'ellipsis_tooltip_box',
-            tooltipDuration: 2000,
-            customTooltipStyle: {},
-        };
-        this.defalutTooltipStyle = function (event) {
+        this.observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                if (mutation && mutation.attributeName == 'style') {
+                    return;
+                }
+                console.log(mutation);
+            });
+        });
+        this.defalutTooltipStyles = function (event) {
             var X = event.type === "touchend" ? event.changedTouches[0].clientX : event.clientX;
             var Y = event.type === "touchend" ? event.changedTouches[0].clientY : event.clientY;
             var isLeft = X < window.innerWidth / 2;
@@ -38,6 +31,57 @@ var AdvancedEllipsis = /** @class */ (function () {
                 bottom: !isTop ? Math.floor(window.innerHeight - Y + boxGap) + 'px' : 'unset',
             };
         };
+        var thisClass = this;
+        var hidden = {};
+        Object.defineProperty(this, 'selector', {
+            get: function () {
+                return hidden['selector'];
+            },
+            set: function (value) {
+                var elements = document.querySelectorAll(value);
+                if (!elements.length)
+                    return;
+                elements.forEach(function (element) {
+                    var node = {
+                        element: element,
+                        eventOn: false,
+                        timer: null,
+                        listener: null,
+                        originalElement: element.cloneNode(true)
+                    };
+                    thisClass.nodes.push(node);
+                });
+                hidden['selector'] = value;
+            }
+        });
+        Object.defineProperty(this, 'options', {
+            get: function () {
+                return thisClass.objectOverwrite({}, hidden['options'], true);
+            },
+            set: function (value) {
+                console.log(value);
+                if (hidden['options'])
+                    thisClass.objectOverwrite(hidden['options'], value);
+                else
+                    hidden['options'] = value;
+            }
+        });
+        this.selector = '[data-ellipsis]';
+        this.options = {
+            mutationObserver: true,
+            defalutStyles: true,
+            useCloneNode: false,
+            showOption: 'static',
+            flowDelay: 1000,
+            flowAfterDelay: 1000,
+            flowSpeed: 50,
+            flowPadding: 20,
+            flowCount: 1,
+            flowAutoCount: Infinity,
+            tooltipElementClass: 'ellipsis_tooltip_box',
+            tooltipDuration: 2000,
+            customTooltipStyles: {},
+        };
         if (typeof options === 'string') {
             this.setElements(options);
         }
@@ -45,79 +89,47 @@ var AdvancedEllipsis = /** @class */ (function () {
             this.setOptions(options || {});
         }
     }
-    AdvancedEllipsis.prototype.objectOverwrite = function (obj1, obj2) {
+    AdvancedEllipsis.prototype.objectOverwrite = function (obj1, obj2, propertyOverwrite) {
         if (typeof obj1 !== 'object' || typeof obj2 !== 'object')
             return;
         Object.keys(obj2).forEach(function (key) {
-            if (obj1.hasOwnProperty(key)) {
+            if (propertyOverwrite || obj1.hasOwnProperty(key)) {
                 obj1[key] = obj2[key];
             }
         });
+        return obj1;
     };
     AdvancedEllipsis.prototype.start = function () {
         if (this.nodes.length) {
-            this.nodes.forEach(this.addSetting.bind(this));
+            this.nodes.forEach(this.setSetting.bind(this));
             this.isStart = true;
         }
+        return this.isStart;
     };
     AdvancedEllipsis.prototype.destroy = function () {
-        if (!this.isStart)
-            return;
         if (this.nodes.length) {
             this.nodes.forEach(this.removeSetting.bind(this));
             this.nodes = [];
             this.isStart = false;
         }
+        return this.isStart;
     };
     AdvancedEllipsis.prototype.setElements = function (selector) {
-        var _this = this;
+        if (!selector)
+            return;
         this.destroy();
-        this.options.selector = selector;
-        var elements = document.querySelectorAll(selector);
-        elements.forEach(function (element) {
-            var node = {
-                element: element,
-                eventOn: false,
-                timer: null,
-                listener: null,
-                beforeDefalutStyles: {
-                    textOverflow: element.style.textOverflow,
-                    overflow: element.style.overflow,
-                    whiteSpace: element.style.whiteSpace
-                }
-            };
-            _this.nodes.push(node);
-        });
-    };
-    AdvancedEllipsis.prototype.addElements = function (selector) {
-        this.options.selector += ", " + selector;
-        var elements = document.querySelectorAll(selector);
-        var nodes = this.nodes;
-        elements.forEach(function (element) {
-            if (nodes.some(function (node) { return element === node.element; }))
-                return; // 중복 제거
-            var node = {
-                element: element,
-                eventOn: false,
-                timer: null,
-                listener: null,
-                beforeDefalutStyles: {
-                    textOverflow: element.style.textOverflow,
-                    overflow: element.style.overflow,
-                    whiteSpace: element.style.whiteSpace
-                }
-            };
-            nodes.push(node);
-        });
+        this.selector = selector;
+        return this;
     };
     AdvancedEllipsis.prototype.getElements = function () {
         return this.nodes.map(function (node) { return node.element; });
     };
     AdvancedEllipsis.prototype.setOptions = function (options) {
-        this.objectOverwrite(this.options, options);
-        this.setElements(this.options.selector);
+        this.options = options;
+        // this.objectOverwrite(this.options, options);
+        return this;
     };
-    AdvancedEllipsis.prototype.addSetting = function (node) {
+    AdvancedEllipsis.prototype.setSetting = function (node) {
         if (node.listener)
             return;
         var styles = node.element.style;
@@ -128,8 +140,11 @@ var AdvancedEllipsis = /** @class */ (function () {
             styles.whiteSpace = 'nowrap';
         }
         var showOption = data.hasOwnProperty('ellipsisShowOption') ? data.ellipsisShowOption : (this.options.showOption || 'static');
-        var lengthDiff = this.options.useCloneNode ? this.checkEllipsisUseCloneNode(node.element) : this.checkEllipsis(node.element);
+        var lengthDiff = this.checkEllipsis(node.element, this.options.useCloneNode);
         if (lengthDiff) {
+            if (this.options.mutationObserver) {
+                this.observer.observe(node.element, { childList: true, attributes: true });
+            }
             node.element.dispatchEvent(new CustomEvent("addSetting", {
                 bubbles: true,
                 detail: {
@@ -149,9 +164,6 @@ var AdvancedEllipsis = /** @class */ (function () {
                     var count = parseFloat(node.element.dataset.ellipsisFlowCount) || this.options.flowAutoCount || Infinity;
                     this.flowAnitate(node, lengthDiff, count);
                     break;
-                case 'title':
-                    this.titleText(node);
-                    break;
                 case 'tooltip':
                     var tooltip_listener = this.tooltipListener(node);
                     node.listener = tooltip_listener;
@@ -164,62 +176,21 @@ var AdvancedEllipsis = /** @class */ (function () {
         }
     };
     AdvancedEllipsis.prototype.removeSetting = function (node) {
-        var styles = node.element.style;
-        var data = node.element.dataset;
-        var showOption = data.hasOwnProperty('ellipsisShowOption') ? data.ellipsisShowOption : this.options.showOption;
-        node.element.dispatchEvent(new CustomEvent("addSetting", {
-            bubbles: true,
-            detail: {
-                element: node.element,
-                showOption: showOption,
-            }
-        }));
-        switch (showOption) {
-            case 'flow':
-                node.element.removeEventListener('mouseover', node.listener);
-                break;
-            case 'flow-auto':
-                break;
-            case 'title':
-                node.element.title = '';
-                break;
-            case 'tooltip':
-                node.element.removeEventListener('mouseover', node.listener);
-                node.element.removeEventListener('touchend', node.listener);
-                break;
-            default:
-                break;
-        }
-        node.listener = null;
-        node.eventOn = false;
-        if (this.options.defalutStyles) {
-            styles.textOverflow = node.beforeDefalutStyles.textOverflow;
-            styles.overflow = node.beforeDefalutStyles.overflow;
-            styles.whiteSpace = node.beforeDefalutStyles.whiteSpace;
-        }
+        node.element.parentNode.insertBefore(node.originalElement, node.element);
+        node.element.parentNode.removeChild(node.element);
     };
-    AdvancedEllipsis.prototype.checkEllipsis = function (element) {
+    AdvancedEllipsis.prototype.checkEllipsis = function (element, useCloneNode) {
+        if (useCloneNode) {
+            var contrast = element.cloneNode(true);
+            contrast.style.display = 'inline';
+            contrast.style.width = 'auto';
+            contrast.style.visibility = 'hidden';
+            element.parentNode.appendChild(contrast);
+            var res = contrast.offsetWidth > element.offsetWidth ? contrast.offsetWidth - element.offsetWidth : 0;
+            element.parentNode.removeChild(contrast);
+            return res;
+        }
         return element.scrollWidth > element.offsetWidth ? element.scrollWidth - element.offsetWidth : 0;
-    };
-    AdvancedEllipsis.prototype.checkEllipsisUseCloneNode = function (element) {
-        var contrast = element.cloneNode(true);
-        contrast.style.display = 'inline';
-        contrast.style.width = 'auto';
-        contrast.style.visibility = 'hidden';
-        element.parentNode.appendChild(contrast);
-        var res = contrast.offsetWidth > element.offsetWidth ? contrast.offsetWidth - element.offsetWidth : 0;
-        element.parentNode.removeChild(contrast);
-        return res;
-    };
-    AdvancedEllipsis.prototype.flowListener = function (node, length) {
-        var _this = this;
-        var count = parseFloat(node.element.dataset.ellipsisFlowCount);
-        var listener = function () {
-            if (!node.eventOn) {
-                _this.flowAnitate(node, length, count);
-            }
-        };
-        return listener;
     };
     AdvancedEllipsis.prototype.flowAnitate = function (node, length, repeatCount) {
         length = length + this.options.flowPadding;
@@ -262,6 +233,16 @@ var AdvancedEllipsis = /** @class */ (function () {
         };
         window.requestAnimationFrame(flowAnitate);
     };
+    // event listener
+    AdvancedEllipsis.prototype.flowListener = function (node, length) {
+        var _this = this;
+        var count = parseFloat(node.element.dataset.ellipsisFlowCount);
+        return function () {
+            if (!node.eventOn) {
+                _this.flowAnitate(node, length, count);
+            }
+        };
+    };
     AdvancedEllipsis.prototype.tooltipListener = function (node) {
         var _a;
         var _this = this;
@@ -271,11 +252,11 @@ var AdvancedEllipsis = /** @class */ (function () {
         if (newClass) {
             (_a = floatElement.classList).add.apply(_a, newClass.split(' '));
         }
-        var listener = function (event) {
+        return function (event) {
             if (!node.eventOn) {
                 floatElement.innerText = node.element.innerText;
-                _this.objectOverwrite(floatElement.style, _this.defalutTooltipStyle(event));
-                _this.objectOverwrite(floatElement.style, _this.options.customTooltipStyle);
+                _this.objectOverwrite(floatElement.style, _this.defalutTooltipStyles(event));
+                _this.objectOverwrite(floatElement.style, _this.options.customTooltipStyles);
                 document.body.appendChild(floatElement);
                 node.eventOn = true;
                 node.timer = setTimeout(function () {
@@ -285,8 +266,8 @@ var AdvancedEllipsis = /** @class */ (function () {
                 }.bind(_this), _this.options.tooltipDuration);
             }
             else {
-                _this.objectOverwrite(floatElement.style, _this.defalutTooltipStyle(event));
-                _this.objectOverwrite(floatElement.style, _this.options.customTooltipStyle);
+                _this.objectOverwrite(floatElement.style, _this.defalutTooltipStyles(event));
+                _this.objectOverwrite(floatElement.style, _this.options.customTooltipStyles);
                 clearTimeout(node.timer);
                 node.timer = setTimeout(function () {
                     document.body.removeChild(floatElement);
@@ -295,10 +276,6 @@ var AdvancedEllipsis = /** @class */ (function () {
                 }.bind(_this), _this.options.tooltipDuration);
             }
         };
-        return listener;
-    };
-    AdvancedEllipsis.prototype.titleText = function (node) {
-        node.element.title = node.element.innerText;
     };
     return AdvancedEllipsis;
 }());
