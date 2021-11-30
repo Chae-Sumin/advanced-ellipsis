@@ -8,43 +8,33 @@ interface ClassOptions extends Object {
     flowSpeed?: number;
     flowPadding?: number;
     flowCount?: number;
+    flowCountPre?: number;
     flowAutoCount?: number;
     tooltipElementClass?: string;
     tooltipDuration?: number;
     customTooltipStyles?: object;
 }
-interface EllipsisNode extends Object {
-    element: HTMLElement;
-    originalElement: HTMLElement;
-    showOption: string;
-    eventOn: Boolean;
-    timer: ReturnType<typeof setTimeout>;
-    listener: EventListener;
-}
 interface EllipsisOptions extends Object {
     originalElement: HTMLElement;
     showOption: string;
-    eventOn: Boolean;
+    eventOn: boolean;
     timer: ReturnType<typeof setTimeout>;
     listener: EventListener;
 }
+interface ObjectOverwrite {
+    (obj1: object, obj2: object, propertyOverwrite?: boolean): object;
+}
+interface EllipsisHandler {
+    (): AdvancedEllipsis;
+}
 declare class AdvancedEllipsis {
-    private selector;
-    private isStart;
-    private elements;
-    private options;
-    private observer;
-    start(): boolean;
-    destroy(): boolean;
-    setElements(selector: string): AdvancedEllipsis;
-    setOptions(options: ClassOptions): AdvancedEllipsis;
-    private defalutTooltipStyles;
-    private objectOverwrite;
-    private addSetting;
-    private removeSetting;
-    private checkEllipsis;
-    private flowAnitate;
-    private flowListener;
-    private tooltipListener;
+    setElements: (selector: string) => AdvancedEllipsis;
+    getElements: () => Array<HTMLElement>;
+    setOptions: (options: ClassOptions) => AdvancedEllipsis;
+    getOptions: () => ClassOptions;
+    getOption: (key: string) => boolean | number | string | object;
+    start: EllipsisHandler;
+    destroy: EllipsisHandler;
+    restart: EllipsisHandler;
     constructor(options: ClassOptions | string, selector: string);
 }

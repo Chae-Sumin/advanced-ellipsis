@@ -1,4 +1,4 @@
-interface classOptions extends Object {
+interface ClassOptions extends Object {
     mutationObserver?: boolean;
     defalutStyles?: boolean;
     useCloneNode?: boolean;
@@ -9,29 +9,30 @@ interface classOptions extends Object {
     flowPadding?: number;
     flowCount?: number;
     flowAutoCount?: number;
+    flowAutoPre?: number;
     tooltipElementClass?: string;
     tooltipDuration?: number;
     customTooltipStyles?: object;
 }
 declare class AdvancedEllipsis {
     selector: string;
+    options: ClassOptions;
     private isStart;
-    private nodes;
-    private options;
-    observer: MutationObserver;
+    private elements;
+    private observer;
+    start(): AdvancedEllipsis;
+    destroy(): AdvancedEllipsis;
+    restart(): AdvancedEllipsis;
+    setElements(selector: string): AdvancedEllipsis;
+    setOptions(options: ClassOptions): AdvancedEllipsis;
     private defalutTooltipStyles;
     private objectOverwrite;
-    start(): boolean;
-    destroy(): boolean;
-    setElements(selector: string): AdvancedEllipsis;
-    getElements(): Array<HTMLElement>;
-    setOptions(options: classOptions): AdvancedEllipsis;
-    private setSetting;
+    private addSetting;
     private removeSetting;
     private checkEllipsis;
     private flowAnitate;
     private flowListener;
     private tooltipListener;
-    constructor(options: classOptions | string);
+    constructor(options: ClassOptions | string, selector: string);
 }
 export default AdvancedEllipsis;

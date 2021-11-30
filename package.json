@@ -8,7 +8,9 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"watch": "tsc --watch"
+		"watch": "tsc --watch",
+		"lint": "eslint . --ext .ts",
+		"lint-fix": "eslint . --ext .ts --fix"
 	},
 	"repository": {
 		"type": "git",
@@ -21,19 +23,22 @@
 	},
 	"homepage": "https://github.com/Chae-Sumin/advanced-ellipsis#readme",
 	"devDependencies": {
-		"typescript": "^4.4.4"
+		"@typescript-eslint/eslint-plugin": "^5.4.0",
+		"@typescript-eslint/parser": "^5.4.0",
+		"eslint": "^8.3.0",
+		"typescript": "^4.5.2"
 	},
 	"keywords": [
-	  "javascript",
-	  "vanilla javascript",
-	  "auto-ellipsis",
-	  "auto",
-	  "ellipsis",
-	  "elipsis",
-	  "flow",
-	  "tooltip",
-	  "html",
-	  "css",
-	  "truncate"
+		"javascript",
+		"vanilla javascript",
+		"auto-ellipsis",
+		"auto",
+		"ellipsis",
+		"elipsis",
+		"flow",
+		"tooltip",
+		"html",
+		"css",
+		"truncate"
 	]
 }

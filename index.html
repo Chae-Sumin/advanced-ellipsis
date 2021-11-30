@@ -11,11 +11,7 @@
 	var advancedEllipsis;
 	window.onload = function () {
 		var a = document.querySelectorAll('[data-ellipsis]');
-		a[0].addEventListener('click', function (e) {
-			console.log(e);
-		})
 		advancedEllipsis = new AdvancedEllipsis();
-		// advancedEllipsis.start();
 	};
 </script>
 <style>
@@ -34,7 +30,7 @@
 		<a class="btn" href="javascript:advancedEllipsis.addElements('#asd');">addElements('#asd')</a>
 	</div>
 	<div class="box" data-ellipsis>just data-ellipsis just data-ellipsis just data-ellipsis</div>
-	<div class="box" data-ellipsis id="asd" data-ellipsis-show-option="flow" data-ellipsis-flow-count="2">id="asd" data-ellipsis-show-option="flow" data-ellipsis-flow-count="2"</div>
+	<div class="box" data-ellipsis id="asd" data-ellipsis-show-option="flow" data-ellipsis-flow-count="2">test</div>
 	<div class="box" data-ellipsis data-ellipsis-show-option="flow-auto">data-ellipsis data-ellipsis-show-option="flow-auto"</div>
 	<div class="box" data-ellipsis data-ellipsis-show-option="title">data-ellipsis data-ellipsis-show-option="title"</div>
 	<div class="box" data-ellipsis data-ellipsis-show-option="tooltip">data-ellipsis data-ellipsis-show-option="tooltip"</div>
