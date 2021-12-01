@@ -3,3 +3,4 @@
 *.iml
 temp/
 node_modules/
+dist/

@@ -6,33 +6,172 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Advanced Ellipsis Demo</title>
 </head>
-<script src="./dist/advanced-ellipsis.js"></script>
+<!-- <script src="./dist/advanced-ellipsis.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/advanced-ellipsis@0.2.0/dist/advanced-ellipsis.js"></script>
 <script>
-	var advancedEllipsis;
+	var advancedEllipsis, demo_flow_detail, demo_tooltip_detail, mutation_observed, target;
 	window.onload = function () {
+		new AdvancedEllipsis({showOption: 'flow'}, '#demo_flow').start();
+		new AdvancedEllipsis({showOption: 'flow-auto'}, '#demo_flow_auto').start();
+		new AdvancedEllipsis({showOption: 'tooltip'}, '#demo_tooltip').start();
 		advancedEllipsis = new AdvancedEllipsis();
-		// advancedEllipsis.start();
+		advancedEllipsis.start();
+
+		demo_flow_detail = new AdvancedEllipsis();
+		demo_flow_detail.setElements('#demo_flow_detail').setOptions({
+			showOption: 'flow',
+			flowDelay: 0,
+			flowAfterDelay: 3000,
+			flowSpeed: 200,
+			flowPadding: 50,
+			flowCountPre: 1,
+		}).start();
+
+		demo_tooltip_detail = new AdvancedEllipsis('#demo_tooltip_detail');
+		demo_tooltip_detail.setOptions({
+			showOption: 'tooltip',
+			tooltipShowAlways: true,
+			tooltipElementClass: 'class1 class2',
+			tooltipDuration: 10000,
+			customTooltipStyles: {
+				backgroundColor: '#000',
+				color: '#fff'
+			}
+		}).start();
+
+		mutation_observed = new AdvancedEllipsis('#mutation_observed').start();
+		target = mutation_observed.getElements()[0];
 	};
+	function change_text(text) {
+		target.innerText = text;
+	}
+	function change_show_option(option) {
+		target.dataset.showOption = option;
+	}
 </script>
 <style>
 	.btn_wrap{display: flex;flex-wrap: wrap;}
 	.btn{display: block; width: 210px; margin: 5px; padding: 10px; background-color: #eaeaea; border: 1px solid #000; color: #000; text-decoration: none;}
 	.btn:hover{box-shadow: inset 0 0 2rem rgba(0, 0, 0, 0.3);}
-	.box {width:200px; margin: 5px;  border:1px solid #a33;}
+	.box{width:200px; margin: 5px;  border:1px solid #a33;}
+	a{display: block; margin: 5px; padding: 5px; width: fit-content; text-decoration: none; color: #000; background-color: #eaeaea;}
 </style>
 <body>
-	<div class="btn_wrap">
-		<a class="btn" href="javascript:advancedEllipsis.start();">start()</a>
-		<a class="btn" href="javascript:advancedEllipsis.destroy();">destroy()</a>
-		<a class="btn" href="javascript:advancedEllipsis.setElements('[data-ellipsis]');">setElements('[data-ellipsis]')</a>
-		<a class="btn" href="javascript:advancedEllipsis.addElements('[data-ellipsis]');">addElements('[data-ellipsis]')</a>
-		<a class="btn" href="javascript:advancedEllipsis.setElements('#asd');">setElements('#asd')</a>
-		<a class="btn" href="javascript:advancedEllipsis.addElements('#asd');">addElements('#asd')</a>
-	</div>
-	<div class="box" data-ellipsis>just data-ellipsis just data-ellipsis just data-ellipsis</div>
-	<div class="box" id="asd" data-ellipsis-show-option="flow" data-ellipsis-flow-count="2">id="asd" data-ellipsis-show-option="flow" data-ellipsis-flow-count="2"</div>
-	<div class="box" data-ellipsis data-ellipsis-show-option="flow-auto">data-ellipsis data-ellipsis-show-option="flow-auto"</div>
-	<div class="box" data-ellipsis data-ellipsis-show-option="title">data-ellipsis data-ellipsis-show-option="title"</div>
-	<div class="box" data-ellipsis data-ellipsis-show-option="tooltip">data-ellipsis data-ellipsis-show-option="tooltip"</div>
+	<h3>Call one per each style.</h3>
+	<h4>
+<pre>
+new AdvancedEllipsis({showOption: 'flow'}, '#demo_flow').start();
+&lt;div id="demo_flow" class="box"&gt;...&lt;/div&gt;
+</pre>
+	</h4>
+	<div id="demo_flow" class="box">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<h4>
+<pre>
+new AdvancedEllipsis({showOption: 'flow-auto'}, '#demo_flow_auto').start();
+&lt;div id="demo_flow_auto" class="box"&gt;...&lt;/div&gt;
+</pre>
+	</h4>
+	<div id="demo_flow_auto" class="box">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<h4>
+<pre>
+new AdvancedEllipsis({showOption: 'tooltip'}, '#demo_tooltip').start();
+&lt;div id="demo_tooltip" class="box"&gt;...&lt;/div&gt;
+</pre>
+	</h4>
+	<div id="demo_tooltip" class="box">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<hr>
+	<h3>Connect multiple styles to one call.</h3>
+	<h4>
+		var advancedEllipsis = new AdvancedEllipsis();<br>
+		advancedEllipsis.start();
+	</h4>
+	<div>&lt;div class="box" data-ellipsis&gt;...&lt;/div&gt;</div>
+	<div class="box" data-ellipsis>Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<br>
+	<div>&lt;div class="box" data-ellipsis data-show-option="flow"&gt;...&lt;/div&gt;</div>
+	<div class="box" data-ellipsis data-show-option="flow">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<br>
+	<div>&lt;div class="box" data-ellipsis data-show-option="flow" data-flow-count="2"&gt;...&lt;/div&gt;</div>
+	<div class="box" data-ellipsis data-show-option="flow" data-flow-count="2">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<br>
+	<div>&lt;div class="box" data-ellipsis data-show-option="flow" data-flow-count-pre="2"&gt;...&lt;/div&gt;</div>
+	<div class="box" data-ellipsis data-show-option="flow" data-flow-count-pre="2">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<br>
+	<div>&lt;div class="box" data-ellipsis data-show-option="flow-auto"&gt;...&lt;/div&gt;</div>
+	<div class="box" data-ellipsis data-show-option="flow-auto">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<br>
+	<div>&lt;div class="box" data-ellipsis data-show-option="flow-auto" data-flow-count="1"&gt;...&lt;/div&gt;</div>
+	<div class="box" data-ellipsis data-show-option="flow-auto" data-flow-count="1">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<br>
+	<div>&lt;div class="box" data-ellipsis data-show-option="tooltip"&gt;...&lt;/div&gt;</div>
+	<div class="box" data-ellipsis data-show-option="tooltip">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<hr>
+	<h3>Apply tooltip options</h3>
+	<h4>
+<pre>
+var demo_flow_detail = new AdvancedEllipsis();
+demo_flow_detail.setElements('#demo_flow_detail').setOptions({
+	showOption: 'flow',
+	flowDelay: 0,
+	flowAfterDelay: 3000,
+	flowSpeed: 200,
+	flowPadding: 50,
+	flowCountPre: 1,
+}).start();
+&lt;div class="box" id="demo_flow_detail"&gt;...&lt;/div&gt;
+</pre>
+	</h4>
+	<div class="box" id="demo_flow_detail">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+	<hr>
+	<h3>Apply tooltip options</h3>
+	<h4>
+<pre>
+var demo_tooltip_detail = new AdvancedEllipsis('#demo_tooltip_detail');
+demo_tooltip_detail.setOptions({
+	showOption: 'tooltip',
+	tooltipShowAlways: true,
+	tooltipElementClass: 'class1 class2',
+	tooltipDuration: 10000,
+	customTooltipStyles: {
+		backgroundColor: '#000',
+		color: '#fff'
+	}
+}).start();
+&lt;div class="box" id="demo_tooltip_detail" data-tooltip-id="tooltip_id"&gt;...&lt;/div&gt;
+&lt;style&gt;
+	#tooltip_id {
+		border-radius: 20px;
+	}
+&lt;/style&gt;
+</pre>
+	</h4>
+	<div class="box" id="demo_tooltip_detail" data-tooltip-id="tooltip_id">Lorem ipsum dolor</div>
+	<style>
+		#tooltip_id {
+			border-radius: 20px;
+		}
+	</style>
+	<hr>
+	<h3>Test mutation observer</h3>
+	<h4>
+<pre>
+var mutation_observed = new AdvancedEllipsis('#mutation_observed').start();
+var target = mutation_observed.getElements()[0];
+function change_text(text) {
+	target.innerText = text;
+}
+function change_show_option(option) {
+	target.dataset.showOption = option;
+}
+&lt;div class="box" id="mutation_observed"&gt;...&lt;/div&gt;
+</pre>
+	</h4>
+	<div class="box" id="mutation_observed">short text</div>
+	<a href="javascript:change_text('short text');">change_text('short text');</a>
+	<a href="javascript:change_text('looooooooooooooooooong text');">change_text('looooooooooooooooooong text');</a>
+	<a href="javascript:change_show_option('static');">change_show_option('static');</a>
+	<a href="javascript:change_show_option('flow');">change_show_option('flow');</a>
+	<a href="javascript:change_show_option('flow-auto');">change_show_option('flow-auto');</a>
+	<a href="javascript:change_show_option('tooltip');">change_show_option('tooltip');</a>
 </body>
 </html>

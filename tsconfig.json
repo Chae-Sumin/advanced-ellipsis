@@ -7,6 +7,7 @@
 		"rootDir": "src",
 		"outDir": "dist",
 		"target": "es5",
-		"newLine": "lf"
+		"newLine": "lf",
+		"declaration": true,
 	},
 }
