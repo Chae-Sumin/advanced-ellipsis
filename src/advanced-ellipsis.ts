@@ -1,28 +1,29 @@
-interface ClassOptions extends Object { // 옵션 인터페이스
+interface ClassOptions extends Object {
 	mutationObserver ?: boolean
 	defalutStyles?: boolean;
 	useCloneNode?: boolean;
 	showOption?: string;
 
-	flowDelay?: number, // ms
-	flowAfterDelay?: number, // ms
-	flowSpeed?: number, // px / s
-	flowPadding?: number, // px
+	flowDelay?: number,
+	flowAfterDelay?: number,
+	flowSpeed?: number,
+	flowPadding?: number,
 	flowCount?: number,
 	flowCountPre?: number,
 	flowAutoCount?: number,
 
-	tooltipElementClass?: string,
-	tooltipDuration?: number, // ms
+	tooltipShowAlways?: boolean,
+	tooltipClass?: string,
+	tooltipDuration?: number,
 	customTooltipStyles?: object,
 }
 
-interface EllipsisOptions extends Object { // ellipsis 요소별 노드
+interface EllipsisOptions extends Object {
 	originalElement: HTMLElement;
 	showOption: string;
-	eventOn: boolean; // 이벤트 중 중복 이벤트 방지
-	timer: ReturnType<typeof setTimeout>; // 이벤트 타이머
-	listener: EventListener; // 이벤트 리스너 관리
+	eventOn: boolean;
+	timer: ReturnType<typeof setTimeout>;
+	listener: EventListener;
 }
 
 interface ObjectOverwrite {
@@ -34,50 +35,45 @@ interface EllipsisHandler {
 }
 
 class AdvancedEllipsis {
-	// public methods
-	// private value changer
 	public setElements: (selector: string) => AdvancedEllipsis;
 	public getElements: () => Array<HTMLElement>;
 	public setOptions: (options: ClassOptions) => AdvancedEllipsis;
 	public getOptions: () => ClassOptions;
 	public getOption: (key: string) => boolean | number | string | object;
-	// handler
+	public getStatus: () => boolean;
 	public start: EllipsisHandler;
 	public destroy: EllipsisHandler;
 	public restart: EllipsisHandler;
 
-
 	constructor(options: ClassOptions | string, selector: string) {
-		// private value
 		const _observer: MutationObserver = new MutationObserver(function (mutations: Array<MutationRecord>) {
 			mutations.forEach(mutation => {
 				if (mutation.attributeName === 'style') return;
-				console.log(mutation);
 				if (mutation.target.childNodes.length === 1 && mutation.target.childNodes[0].nodeType === 3) {
-					this.addSetting(mutation.target);
+					addSetting(<HTMLElement>mutation.target);
 				}
 			});
 		}.bind(this));
 		const _options: ClassOptions = {
-			mutationObserver: true, // 변경 감지
+			mutationObserver: true,
 			defalutStyles: true,
 			useCloneNode: false,
 			showOption: 'static',
-			flowDelay: 1000, // 애니메이션 시작 전 시간
-			flowAfterDelay: 1000, // 애니메이션 끝나고 초기화 대기 시간
-			flowSpeed: 50, // 애니메이션 스피드
-			flowPadding: 20, // flow를 얼마나 더 끌고 갈지
-			flowCount: 1, // flow 기본 횟수
-			flowAutoCount: Infinity, // flow-auto 기본 횟수
+			flowDelay: 1000,
+			flowAfterDelay: 1000,
+			flowSpeed: 50,
+			flowPadding: 20,
+			flowCount: 1,
+			flowAutoCount: Infinity,
 			flowCountPre: 0,
-			tooltipElementClass: 'ellipsis_tooltip_box',
+			tooltipShowAlways: false,
+			tooltipClass: 'ellipsis_tooltip_box',
 			tooltipDuration: 2000,
 			customTooltipStyles: {},
 		};
 		const _elements: Array<HTMLElement> = [];
 		let _isStart = false;
 
-		// private methods
 		const objectOverwrite: ObjectOverwrite = (obj1, obj2, propertyOverwrite) => {
 			if (typeof obj1 !== 'object' || typeof obj2 !== 'object') return;
 			Object.keys(obj2).forEach(function (key: string) {
@@ -88,8 +84,8 @@ class AdvancedEllipsis {
 			return obj1;
 		};
 		const defalutTooltipStyles = (event: MouseEvent | TouchEvent): object => {
-			const X = event.type === "touchend" ? (<TouchEvent>event).changedTouches[0].pageX : (<MouseEvent>event).pageX;
-			const Y = event.type === "touchend" ? (<TouchEvent>event).changedTouches[0].pageY : (<MouseEvent>event).pageY;
+			const X = event.type === "touchstart" ? (<TouchEvent>event).changedTouches[0].pageX : (<MouseEvent>event).pageX;
+			const Y = event.type === "touchstart" ? (<TouchEvent>event).changedTouches[0].pageY : (<MouseEvent>event).pageY;
 			const isLeft: boolean = X < window.innerWidth / 2;
 			const isTop: boolean = Y < window.innerHeight / 2;
 			const boxGap = 10;
@@ -161,10 +157,9 @@ class AdvancedEllipsis {
 			}
 			window.requestAnimationFrame(flowAnitate);
 		}
-		// event listener
 		const flowListener = (element: HTMLElement, length: number): EventListener => {
 			const e_option: EllipsisOptions = element['ellipsisOption'];
-			const count: number = element.dataset.ellipsisFlowCount ? parseFloat(element.dataset.ellipsisFlowCount) : <number>this.getOption('flowCount');
+			const count: number = element.dataset.flowCount ? parseFloat(element.dataset.flowCount) : <number>this.getOption('flowCount');
 			return (): void => {
 				if (!e_option.eventOn) {
 					flowAnitate(element, length, count);
@@ -175,10 +170,10 @@ class AdvancedEllipsis {
 			const e_option: EllipsisOptions = element['ellipsisOption'];
 			const this_options: ClassOptions = this.getOptions();
 			const floatElement: HTMLElement = document.createElement("div");
-			if (element.dataset.tooltipElementId) {
-				floatElement.id = element.dataset.tooltipElementId;
+			if (element.dataset.tooltipId) {
+				floatElement.id = element.dataset.tooltipId;
 			}
-			const tooltipClass = element.dataset.tooltipElementClass || this_options.tooltipElementClass;
+			const tooltipClass = element.dataset.tooltipClass || this_options.tooltipClass;
 			if (tooltipClass) {
 				floatElement.classList.add(...tooltipClass.split(' '));
 			}
@@ -207,7 +202,6 @@ class AdvancedEllipsis {
 			}
 		}
 
-		// element status handler
 		const addSetting = (element: HTMLElement): void => {
 			const e_option: EllipsisOptions = element['ellipsisOption'];
 			const this_options: ClassOptions = this.getOptions();
@@ -220,7 +214,7 @@ class AdvancedEllipsis {
 				});
 			}
 			if (this_options.mutationObserver) _observer.observe(element, {childList: true, attributes : true});
-			e_option.showOption = Object.prototype.hasOwnProperty.call(element.dataset, 'ellipsisShowOption') ? element.dataset.ellipsisShowOption : (this_options.showOption || 'static');
+			e_option.showOption = Object.prototype.hasOwnProperty.call(element.dataset, 'showOption') ? element.dataset.showOption : (this_options.showOption || 'static');
 			const lengthDiff: number = checkEllipsis(element, this_options.useCloneNode);
 			if (lengthDiff) {
 				let count = 0;
@@ -228,22 +222,27 @@ class AdvancedEllipsis {
 					case 'flow':
 						e_option.listener = flowListener(element, lengthDiff);
 						element.addEventListener('mouseover', e_option.listener);
-						if ((count = this_options.flowCountPre || parseFloat(element.dataset.ellipsisFlowCountPre))) {
+						element.addEventListener('touchstart', e_option.listener, {passive: true});
+						if ((count = this_options.flowCountPre || parseFloat(element.dataset.flowCountPre))) {
 							flowAnitate(element, lengthDiff, count);
 						}
 						break;
 					case 'flow-auto':
-						count = parseFloat(element.dataset.ellipsisFlowCount) || this_options.flowAutoCount || Infinity;
+						count = parseFloat(element.dataset.flowCount) || this_options.flowAutoCount || Infinity;
 						flowAnitate(element, lengthDiff, count);
 						break;
 					case 'tooltip':
 						e_option.listener = tooltipListener(element);
 						element.addEventListener('mouseover', e_option.listener);
-						element.addEventListener('touchend', e_option.listener);
+						element.addEventListener('touchstart', e_option.listener, {passive: true});
 						break;
 					default:
 						break;
 				}
+			} else if ((element.dataset.tooltipShowAlways || this_options.tooltipShowAlways) && e_option.showOption === 'tooltip') {
+				e_option.listener = tooltipListener(element);
+				element.addEventListener('mouseover', e_option.listener);
+				element.addEventListener('touchstart', e_option.listener, {passive: true});
 			}
 		}
 		const removeSetting = (element: HTMLElement): void => {
@@ -251,12 +250,13 @@ class AdvancedEllipsis {
 			switch (e_option.showOption) {
 				case 'flow':
 					element.removeEventListener('mouseover', e_option.listener);
+					element.removeEventListener('touchstart', e_option.listener);
 					break;
 				case 'flow-auto':
 					break;
 				case 'tooltip':
 					element.removeEventListener('mouseover', e_option.listener);
-					element.removeEventListener('touchend', e_option.listener);
+					element.removeEventListener('touchstart', e_option.listener);
 					break;
 				default:
 					break;
@@ -270,12 +270,10 @@ class AdvancedEllipsis {
 			objectOverwrite(element.style, e_option.originalElement.style);
 		}
 
-		// public methods
 		this.setElements = (selector) => {
 			if (!selector) return;
 			this.destroy();
 			const elements = document.querySelectorAll(selector);
-			if (!elements.length) return;
 			_elements.length = 0;
 			elements.forEach((element: HTMLElement) => {
 				if (element.childNodes.length === 1 && element.childNodes[0].nodeType === 3) {
@@ -303,8 +301,8 @@ class AdvancedEllipsis {
 		};
 		this.getOptions = () => objectOverwrite({}, _options, true);
 		this.getOption = key => _options[key];
-		// handler
-		this.start = () => { // 노드들의 옵션에 따라 노드 이벤트 등록
+		this.getStatus = () => _isStart;
+		this.start = () => {
 			const elements: Array<HTMLElement> = this.getElements();
 			if (elements.length) {
 				elements.forEach(addSetting.bind(this));
@@ -312,7 +310,7 @@ class AdvancedEllipsis {
 			}
 			return this;
 		}
-		this.destroy = () => { // 등록된 이벤트 및 스타일 삭제
+		this.destroy = () => {
 			const elements: Array<HTMLElement> = this.getElements();
 			if (elements.length) {
 				_observer.disconnect();
@@ -331,14 +329,15 @@ class AdvancedEllipsis {
 			return this;
 		}
 
-		// init
 		this.setElements('[data-ellipsis]');
-		if (typeof selector === 'string') {
-			this.setElements(selector);
-		} else if (typeof options === 'string') {
+		if (typeof options === 'string') {
 			this.setElements(options);
 		} else if (typeof options === 'object') {
 			this.setOptions(<ClassOptions>options);
+			if (typeof selector === 'string') {
+				this.setElements(selector);
+			}
 		}
+		Object.freeze(this);
 	}
 }
