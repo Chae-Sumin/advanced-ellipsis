@@ -1,6 +1,6 @@
 {
 	"name": "advanced-ellipsis",
-	"version": "0.2.0",
+	"version": "0.2.2",
 	"description": "Advanced ellipsis available in JS",
 	"main": "dist/advanced-ellipsis.esm.js",
 	"files": [
