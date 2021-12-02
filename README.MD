@@ -63,6 +63,8 @@ If `$selector` is not entered, `'[data-ellipsis]'` is set as the default.
 |`destroy`|Restore the ellipsis set through the `start()`.<br>`$status` becomes false|-|`this`|
 |`restart`|Restart when `$status` is start(true).|-|`this`|
 
+<br>
+
 |Methods|Description|Parameter|Parameter type|return|
 |-|-|-|-|-|
 |`setElements`|Set the element according to the `$selector`.<br>Existing elements are automatically `destroy()`|`$selector`|string|`this`|
