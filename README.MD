@@ -84,7 +84,7 @@ If `$selector` is not entered, `'[data-ellipsis]'` is set as the default.
 |`defaultStyles`|If the value is true, apply ellipsis by default.<br>If false, you have to modify the style yourself to ellipsis.<br>`defaultStyles` = {<br>&emsp;overflow: hidden;<br>&emsp;white-space: nowrap;<br>&emsp;text-overflow: ellipsis;<br>}|boolean|true|
 |`useCloneNode`|If the value is true, use cloneNode to determine ellipsis.<br>If false, use scrollWidth.|boolean|false|
 |`showOption`|It gives special effects to ellipsis processed nodes.<br>`'static'`: I only apply ellipsis.<br>`'flow'`: Text flows sideways when a mouse hover or touch is touched.<br>`'flow-auto'`: Text automatically flows sideways.<br>`'tooltip'`: Text flows sideways when a mouse hover or touch is touched.|string|'static'|
-|`correctionValue`|Add the calibration value in 'px' to the internal size. (Large values make elipsis easier to operate.)|number|0|
+|`correctionValue`|Add the calibration value in 'px' to the internal size. (The larger the value, the more generous the ellipsis decision is.)|number|0|
 
 ### flow options <span id="flow_options"></span>
 When `showOption` or `data-ellipsis-show-option` is `'flow'` or `'flow-auto'`
