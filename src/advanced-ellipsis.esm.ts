@@ -3,6 +3,7 @@ interface ClassOptions extends Object {
 	defaultStyles?: boolean;
 	useCloneNode?: boolean;
 	showOption?: string;
+	correctionValue?: number;
 
 	flowDelay?: number,
 	flowAfterDelay?: number,
@@ -59,6 +60,7 @@ class AdvancedEllipsis {
 			defaultStyles: true,
 			useCloneNode: false,
 			showOption: 'static',
+			correctionValue: 0,
 			flowDelay: 1000,
 			flowAfterDelay: 1000,
 			flowSpeed: 50,
@@ -105,17 +107,19 @@ class AdvancedEllipsis {
 			}
 		}
 		const checkEllipsis = (element: HTMLElement, useCloneNode?: boolean): number => {
+			let inner: number = element.scrollWidth;
+			const outer: number = element.offsetWidth;
 			if (useCloneNode) {
 				const contrast: HTMLElement = <HTMLElement>element.cloneNode(true);
 				contrast.style.display = 'inline';
 				contrast.style.width = 'auto';
 				contrast.style.visibility = 'hidden';
 				element.parentNode.appendChild(contrast);
-				const res: number = contrast.offsetWidth > element.offsetWidth ? contrast.offsetWidth - element.offsetWidth : 0;
+				inner = contrast.offsetWidth;
 				element.parentNode.removeChild(contrast);
-				return res;
 			}
-			return element.scrollWidth > element.offsetWidth ? element.scrollWidth - element.offsetWidth : 0;
+			inner += _options.correctionValue;
+			return inner > outer ? inner - outer : 0;
 		}
 		const flowAnitate = (element: HTMLElement, length: number, repeatCount?: number): void => {
 			const e_option: EllipsisOptions = element['ellipsisOption'];
@@ -211,7 +215,7 @@ class AdvancedEllipsis {
 					textOverflow: 'ellipsis',
 					overflow: 'hidden',
 					whiteSpace: 'nowrap',
-				});
+				}, true);
 			}
 			if (this_options.mutationObserver) _observer.observe(element, {childList: true, attributes : true});
 			e_option.showOption = Object.prototype.hasOwnProperty.call(element.dataset, 'showOption') ? element.dataset.showOption : (this_options.showOption || 'static');
