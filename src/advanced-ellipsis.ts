@@ -211,7 +211,7 @@ class AdvancedEllipsis {
 					textOverflow: 'ellipsis',
 					overflow: 'hidden',
 					whiteSpace: 'nowrap',
-				});
+				}, true);
 			}
 			if (this_options.mutationObserver) _observer.observe(element, {childList: true, attributes : true});
 			e_option.showOption = Object.prototype.hasOwnProperty.call(element.dataset, 'showOption') ? element.dataset.showOption : (this_options.showOption || 'static');
