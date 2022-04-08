@@ -1,6 +1,6 @@
 interface ClassOptions extends Object {
 	mutationObserver ?: boolean
-	defalutStyles?: boolean;
+	defaultStyles?: boolean;
 	useCloneNode?: boolean;
 	showOption?: string;
 
@@ -56,7 +56,7 @@ class AdvancedEllipsis {
 		}.bind(this));
 		const _options: ClassOptions = {
 			mutationObserver: true,
-			defalutStyles: true,
+			defaultStyles: true,
 			useCloneNode: false,
 			showOption: 'static',
 			flowDelay: 1000,
@@ -83,7 +83,7 @@ class AdvancedEllipsis {
 			});
 			return obj1;
 		};
-		const defalutTooltipStyles = (event: MouseEvent | TouchEvent): object => {
+		const defaultTooltipStyles = (event: MouseEvent | TouchEvent): object => {
 			const X = event.type === "touchstart" ? (<TouchEvent>event).changedTouches[0].pageX : (<MouseEvent>event).pageX;
 			const Y = event.type === "touchstart" ? (<TouchEvent>event).changedTouches[0].pageY : (<MouseEvent>event).pageY;
 			const isLeft: boolean = X < window.innerWidth / 2;
@@ -180,7 +180,7 @@ class AdvancedEllipsis {
 			return (event: MouseEvent): void => {
 				if (!e_option.eventOn) {
 					floatElement.innerText = element.innerText;
-					objectOverwrite(floatElement.style, defalutTooltipStyles(event));
+					objectOverwrite(floatElement.style, defaultTooltipStyles(event));
 					objectOverwrite(floatElement.style, this_options.customTooltipStyles);
 					document.body.appendChild(floatElement);
 					e_option.eventOn = true;
@@ -190,7 +190,7 @@ class AdvancedEllipsis {
 						e_option.eventOn = false;
 					}.bind(this), this_options.tooltipDuration);
 				} else {
-					objectOverwrite(floatElement.style, defalutTooltipStyles(event));
+					objectOverwrite(floatElement.style, defaultTooltipStyles(event));
 					objectOverwrite(floatElement.style, this_options.customTooltipStyles);
 					clearTimeout(e_option.timer);
 					e_option.timer = setTimeout(function () {
@@ -206,7 +206,7 @@ class AdvancedEllipsis {
 			const e_option: EllipsisOptions = element['ellipsisOption'];
 			const this_options: ClassOptions = this.getOptions();
 			if (e_option.showOption) removeSetting(element);
-			if (this_options.defalutStyles) {
+			if (this_options.defaultStyles) {
 				objectOverwrite(element.style, {
 					textOverflow: 'ellipsis',
 					overflow: 'hidden',
