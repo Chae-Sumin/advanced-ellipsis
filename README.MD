@@ -81,9 +81,10 @@ If `$selector` is not entered, `'[data-ellipsis]'` is set as the default.
 |Option|Description|Type|Default|
 |-|-|-|-|
 |`mutationObserver`|When this value is true and `$status` is start(true),<br>change the set element is detected.<br>Elements whose changes are detected are reset.|boolean|true|
-|`defalutStyles`|If the value is true, apply ellipsis by default.<br>If false, you have to modify the style yourself to ellipsis.<br>`defalutStyles` = {<br>&emsp;overflow: hidden;<br>&emsp;white-space: nowrap;<br>&emsp;text-overflow: ellipsis;<br>}|boolean|true|
+|`defaultStyles`|If the value is true, apply ellipsis by default.<br>If false, you have to modify the style yourself to ellipsis.<br>`defaultStyles` = {<br>&emsp;overflow: hidden;<br>&emsp;white-space: nowrap;<br>&emsp;text-overflow: ellipsis;<br>}|boolean|true|
 |`useCloneNode`|If the value is true, use cloneNode to determine ellipsis.<br>If false, use scrollWidth.|boolean|false|
 |`showOption`|It gives special effects to ellipsis processed nodes.<br>`'static'`: I only apply ellipsis.<br>`'flow'`: Text flows sideways when a mouse hover or touch is touched.<br>`'flow-auto'`: Text automatically flows sideways.<br>`'tooltip'`: Text flows sideways when a mouse hover or touch is touched.|string|'static'|
+|`correctionValue`|Add the calibration value in 'px' to the internal size. (The larger the value, the more generous the ellipsis decision is.)|number|0|
 
 ### flow options <span id="flow_options"></span>
 When `showOption` or `data-ellipsis-show-option` is `'flow'` or `'flow-auto'`
@@ -136,9 +137,9 @@ example:
 > > [`Attributes`](#attribute) > [`tooltipElementClass`](#tooltip_options)
 > ___
 > Tooltip Element Styles
-> > `!important styles` > `customTooltipStyles` > `defalutTooltipStyles` > `User-entered inline styles` > `css styles`
+> > `!important styles` > `customTooltipStyles` > `defaultTooltipStyles` > `User-entered inline styles` > `css styles`
 > >
-> >`customTooltipStyles` and `defalutTooltipStyles` will be override `User-entered inline styles`
+> >`customTooltipStyles` and `defaultTooltipStyles` will be override `User-entered inline styles`
 
 
 ## License
